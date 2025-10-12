@@ -15,6 +15,12 @@ const userSchema = mongoose.Schema({
         trim: true,
         select: false,
     },
+    role: {
+        type: String,
+        enum: ['patient', 'medecin', 'infirmier', 'secretaire', 'admin'],
+        default: 'patient',
+        required: true,
+    },
     verified: {
         type: Boolean,
         default: false
@@ -27,6 +33,10 @@ const userSchema = mongoose.Schema({
         type: String,
         select: false,
     },
+    isActive: {
+        type: Boolean,
+        default: true,
+    },
     forgotPasswordCode: {
         type: String,
         select: false,
@@ -34,6 +44,17 @@ const userSchema = mongoose.Schema({
     forgotPasswordCodeValidation: {
         type: Number,
         select: false,
+    },
+    profile: {
+        firstName: String,
+        lastName: String,
+        phone: String,
+        address: String,
+        dateOfBirth: Date,
+        gender: {
+            type: String,
+            enum: ['male', 'female', 'other'],
+        },
     },
 }, {
     timestamps: true

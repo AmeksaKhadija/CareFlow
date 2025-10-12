@@ -5,7 +5,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 import authRouter from './routers/authRouter.js';
-
+import userRouter from './routers/userRouter.js';
 
 dotenv.config();
 const app = express();
@@ -24,9 +24,10 @@ mongoose.mongoose.connect(uri).then(() => {
 });
 
 app.use('/api/auth', authRouter);
+app.use('/api/users', userRouter);
 
 app.get('/', (req, res) => {
-    res.json({ message: 'Hello from vscode' });
+    res.json({ message: 'CareFlow API is running' });
 });
 
 app.listen(process.env.PORT, () => {
