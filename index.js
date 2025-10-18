@@ -6,6 +6,10 @@ import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
 import authRouter from './routers/authRouter.js';
 import userRouter from './routers/userRouter.js';
+import patientRouter from './routers/patientRouter.js';
+import appointmentRouter from './routers/appointmentRouter.js';
+
+
 
 dotenv.config();
 const app = express();
@@ -25,6 +29,8 @@ mongoose.mongoose.connect(uri).then(() => {
 
 app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
+app.use('/api/patients', patientRouter);
+app.use('/api/appointments', appointmentRouter);
 
 app.get('/', (req, res) => {
     res.json({ message: 'CareFlow API is running' });

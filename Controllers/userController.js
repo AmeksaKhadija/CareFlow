@@ -3,7 +3,6 @@ import { doHash } from '../utils/hashing.js';
 import { createUserSchema, updateUserSchema } from '../middlewares/validator.js';
 
 const userController = {
-    // Créer un utilisateur (Admin uniquement)
     createUser: async (req, res) => {
         try {
             const { error } = createUserSchema.validate(req.body, { abortEarly: false });
@@ -46,7 +45,6 @@ const userController = {
         }
     },
 
-    // Obtenir tous les utilisateurs avec filtres
     getAllUsers: async (req, res) => {
         try {
             const { role, isActive, verified, page = 1, limit = 10, search } = req.query;
@@ -89,7 +87,6 @@ const userController = {
         }
     },
 
-    // Obtenir un utilisateur par ID
     getUserById: async (req, res) => {
         try {
             const { id } = req.params;
@@ -109,7 +106,6 @@ const userController = {
         }
     },
 
-    // Mettre à jour un utilisateur
     updateUser: async (req, res) => {
         try {
             const { id } = req.params;
@@ -157,7 +153,6 @@ const userController = {
         }
     },
 
-    // Suspendre un compte
     suspendUser: async (req, res) => {
         try {
             const { id } = req.params;
@@ -187,7 +182,6 @@ const userController = {
         }
     },
 
-    // Réactiver un compte
     reactivateUser: async (req, res) => {
         try {
             const { id } = req.params;
@@ -210,7 +204,6 @@ const userController = {
         }
     },
 
-    // Supprimer un utilisateur
     deleteUser: async (req, res) => {
         try {
             const { id } = req.params;
