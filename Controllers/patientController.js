@@ -111,7 +111,6 @@ const patientController = {
         }
     },
 
-    // Obtenir le dossier patient de l'utilisateur connecté
     getMyPatientRecord: async (req, res) => {
         try {
             const patient = await Patient.findOne({ user: req.user.userId }).populate('user', 'email verified');

@@ -43,6 +43,7 @@ export const verifyToken = async (req, res, next) => {
 
         req.user = {
             userId: decoded.userId,
+            name: user.name,
             email: decoded.email,
             role: user.role,
             verified: decoded.verified,

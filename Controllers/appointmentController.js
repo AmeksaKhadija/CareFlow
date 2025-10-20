@@ -4,7 +4,6 @@ import User from '../Models/userModel.js';
 import { createAppointmentSchema, updateAppointmentSchema } from '../middlewares/validator.js';
 
 const appointmentController = {
-    // Créer un rendez-vous
     createAppointment: async (req, res) => {
         try {
             const { error } = createAppointmentSchema.validate(req.body, { abortEarly: false });
@@ -35,7 +34,7 @@ const appointmentController = {
             const appointmentDateTime = new Date(appointmentDate);
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            
+
             if (appointmentDateTime < today) {
                 return res.status(400).json({
                     success: false,
@@ -44,7 +43,7 @@ const appointmentController = {
             }
 
             const hasConflict = await Appointment.checkConflict(doctorId, appointmentDate, startTime, endTime);
-            
+
             if (hasConflict) {
                 return res.status(409).json({
                     success: false,
@@ -89,7 +88,6 @@ const appointmentController = {
         }
     },
 
-    // Obtenir tous les rendez-vous (avec filtres)
     getAllAppointments: async (req, res) => {
         try {
             const { page = 1, limit = 10, status, doctorId, patientId, date } = req.query;
@@ -135,12 +133,10 @@ const appointmentController = {
         }
     },
 
-    // Obtenir mes rendez-vous (patient)
     getMyAppointments: async (req, res) => {
         try {
             const { status, upcoming } = req.query;
 
-            // Trouver le dossier patient de l'utilisateur
             const patient = await Patient.findOne({ user: req.user.userId });
             if (!patient) {
                 return res.status(404).json({
@@ -173,7 +169,6 @@ const appointmentController = {
         }
     },
 
-    // Obtenir les rendez-vous d'un médecin
     getDoctorAppointments: async (req, res) => {
         try {
             const { doctorId } = req.params;
@@ -207,7 +202,6 @@ const appointmentController = {
         }
     },
 
-    // Vérifier les disponibilités
     checkAvailability: async (req, res) => {
         try {
             const { doctorId, date } = req.query;
@@ -229,13 +223,11 @@ const appointmentController = {
                 status: { $in: ['scheduled', 'confirmed', 'in-progress'] },
             }).select('startTime endTime');
 
-            // Heures de travail (8h - 18h)
             const workingHours = {
                 start: '08:00',
                 end: '18:00',
             };
 
-            // Créneaux occupés
             const bookedSlots = appointments.map(apt => ({
                 start: apt.startTime,
                 end: apt.endTime,
@@ -254,7 +246,6 @@ const appointmentController = {
         }
     },
 
-    // Obtenir un rendez-vous par ID
     getAppointmentById: async (req, res) => {
         try {
             const { id } = req.params;
@@ -279,7 +270,6 @@ const appointmentController = {
         }
     },
 
-    // Mettre à jour un rendez-vous
     updateAppointment: async (req, res) => {
         try {
             const { id } = req.params;
@@ -322,7 +312,7 @@ const appointmentController = {
                 req.body,
                 { new: true, runValidators: true }
             ).populate('patient', 'firstName lastName phone')
-             .populate('doctor', 'email profile');
+                .populate('doctor', 'email profile');
 
             return res.status(200).json({
                 success: true,
@@ -335,7 +325,6 @@ const appointmentController = {
         }
     },
 
-    // Annuler un rendez-vous
     cancelAppointment: async (req, res) => {
         try {
             const { id } = req.params;
@@ -378,7 +367,6 @@ const appointmentController = {
         }
     },
 
-    // Marquer comme complété
     completeAppointment: async (req, res) => {
         try {
             const { id } = req.params;

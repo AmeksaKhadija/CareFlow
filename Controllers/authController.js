@@ -19,7 +19,7 @@ const authController = {
             return res.status(400).json({ success: false, message: msgs.join(', ') });
         }
 
-        const { email, password, role } = req.body;
+        const {name, email, password, role } = req.body;
 
         try {
             const existingUser = await User.findOne({ email });
@@ -36,6 +36,7 @@ const authController = {
             const userRole = role || 'patient';
 
             const newUser = new User({
+                name,
                 email,
                 password: hashedPassword,
                 role: userRole,
