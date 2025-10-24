@@ -8,8 +8,11 @@ import authRouter from './routers/authRouter.js';
 import userRouter from './routers/userRouter.js';
 import patientRouter from './routers/patientRouter.js';
 import appointmentRouter from './routers/appointmentRouter.js';
-
-
+import consultationRouter from './routers/consultationRouter.js';
+import prescriptionRouter from './routers/prescriptionRouter.js';
+import pharmacyRouter from './routers/pharmacyRouter.js';
+import labOrderRouter from './routers/labOrderRouter.js';
+import documentRouter from './routers/documentRouter.js';
 
 dotenv.config();
 const app = express();
@@ -19,9 +22,8 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const uri = "mongodb+srv://ameksa_khadija:kKvsvuALWS1pu2sw@cluster0.pubiuhq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
-mongoose.mongoose.connect(uri).then(() => {
+mongoose.mongoose.connect(process.env.MONGO_URL).then(() => {
     console.log("DATABASE CONNECETED");
 }).catch((error) => {
     console.log(error);
@@ -31,6 +33,11 @@ app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
 app.use('/api/patients', patientRouter);
 app.use('/api/appointments', appointmentRouter);
+app.use('/api/consultations', consultationRouter);
+app.use('api/prescriptions', prescriptionRouter);
+app.use('api/pharmacyRouter', pharmacyRouter);
+app.use('api/labOrderRouter', labOrderRouter);
+app.use('api/documentRouter', documentRouter);
 
 app.get('/', (req, res) => {
     res.json({ message: 'CareFlow API is running' });
