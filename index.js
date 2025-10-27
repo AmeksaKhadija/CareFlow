@@ -35,9 +35,9 @@ app.use('/api/patients', patientRouter);
 app.use('/api/appointments', appointmentRouter);
 app.use('/api/consultations', consultationRouter);
 app.use('api/prescriptions', prescriptionRouter);
-app.use('api/pharmacyRouter', pharmacyRouter);
-app.use('api/labOrderRouter', labOrderRouter);
-app.use('api/documentRouter', documentRouter);
+app.use('api/pharmacies', pharmacyRouter);
+app.use('api/lab-orders', labOrderRouter);
+app.use('api/documents', documentRouter);
 
 app.get('/', (req, res) => {
     res.json({ message: 'CareFlow API is running' });

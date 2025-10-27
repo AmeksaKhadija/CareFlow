@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import LabOrder from '../Models/labOrderModel.js';
-import LabResult from '../Models/labResultModel.js';
-import storageService from '../services/storageService.js'; // implement upload/getPresignedUrl
+// import storageService from '../services/storageService.js'; // implement upload/getPresignedUrl
 import Consultation from '../Models/consultationModel.js';
 
 const labOrderController = {

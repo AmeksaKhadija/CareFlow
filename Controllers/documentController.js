@@ -1,13 +1,12 @@
 import mongoose from 'mongoose';
-import MedicalDocument from '../Models/medicalDocumentModel.js';
-import storageService from '../services/storageService.js';
+import MedicalDocument from '../Models/documentModel.js';
 
 const documentController = {
   uploadDocument: async (req, res) => {
     try {
       if (!req.file) return res.status(400).json({ success: false, message: 'file required' });
 
-      const { patientId, category = 'report', tags = [] } = req.body;
+      const { patientId, category = 'other', tags = [] } = req.body;
       if (!patientId) return res.status(400).json({ success: false, message: 'patientId required' });
 
       const key = `documents/${patientId}/${Date.now()}_${req.file.originalname}`;
@@ -15,13 +14,14 @@ const documentController = {
 
       const doc = new MedicalDocument({
         patient: patientId,
-        uploader: req.user.userId,
-        filename: req.file.originalname,
-        storageKey: key,
-        contentType: req.file.mimetype,
-        size: req.file.size,
+        uploadedBy: req.user.userId,
+        originalFileName: req.file.originalname,
+        fileName: key.split('/').pop(),
+        fileUrl: key, // stocke la clé/URL côté storage; getPresignedUrl utilisera cette valeur
+        fileSize: req.file.size,
+        mimeType: req.file.mimetype,
         category,
-        tags: Array.isArray(tags) ? tags : (tags ? tags.split(',') : []),
+        tags: Array.isArray(tags) ? tags : (tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : []),
       });
 
       await doc.save();
@@ -50,7 +50,7 @@ const documentController = {
       if (!doc) return res.status(404).json({ success: false, message: 'Document not found' });
 
       // check ownership or roles in middleware before calling this
-      const url = await storageService.getPresignedUrl(doc.storageKey, 600);
+      const url = await storageService.getPresignedUrl(doc.fileUrl, 600);
       return res.status(200).json({ success: true, url });
     } catch (error) {
       console.error('getPresignedUrl error:', error);
@@ -66,7 +66,7 @@ const documentController = {
         const doc = await MedicalDocument.findById(id).session(session);
         if (!doc) throw { status: 404, message: 'Document not found' };
 
-        await storageService.deleteObject(doc.storageKey);
+        await storageService.deleteObject(doc.fileUrl);
         await MedicalDocument.deleteOne({ _id: id }).session(session);
       });
 
