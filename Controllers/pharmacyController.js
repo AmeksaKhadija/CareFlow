@@ -10,7 +10,7 @@ const pharmacyController = {
       return res.status(201).json({ success: true, pharmacy });
     } catch (error) {
       console.error('createPharmacy error:', error);
-      return res.status(500).json({ success: false, message: 'Server error' });
+      return res.status(500).json({ success: false, message: error.message });
     }
   },
 

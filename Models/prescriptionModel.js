@@ -11,15 +11,15 @@ const prescriptionSchema = new mongoose.Schema({
         ref: 'Patient',
         required: [true, 'Patient is required'],
     },
-    doctor: {
+    prescriber: {                                  // <-- ajouté
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: [true, 'Doctor is required'],
+        required: false,
     },
     pharmacy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Pharmacy',
-        required: false, 
+        required: false,
     },
     medications: [{
         name: {
