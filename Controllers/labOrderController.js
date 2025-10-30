@@ -62,7 +62,8 @@ const labOrderController = {
         await result.save({ session });
 
         labOrder.results.push(result._id);
-        labOrder.status = 'received';
+        labOrder.status = 'completed';
+        labOrder.completedAt = new Date();
         await labOrder.save({ session });
       });
 
