@@ -16,7 +16,7 @@ router.get('/pharmacy/:pharmacyId', verifyToken, authorize('pharmacien', 'admin'
 // actions: sign, assign, send, dispense
 router.put('/:id/sign', verifyToken, authorize('medecin'), prescriptionController.signPrescription);
 router.post('/:id/assign-pharmacy', verifyToken, authorize('medecin', 'secretaire', 'admin'), prescriptionController.assignPharmacy);
-router.post('/:id/send', verifyToken, authorize('medecin', 'secretaire', 'admin'), prescriptionController.sendPrescription);
+// router.post('/:id/send', verifyToken, authorize('medecin', 'secretaire', 'admin'), prescriptionController.sendPrescription);
 router.post('/:id/dispense', verifyToken, authorize('pharmacien'), prescriptionController.dispensePrescription);
 
 export default router;

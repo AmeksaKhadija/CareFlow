@@ -7,26 +7,38 @@ import Pharmacy from '../Models/pharmacyModel.js';
 const prescriptionController = {
     createPrescription: async (req, res) => {
         try {
-            const { consultationId, patientId, items = [], notes } = req.body;
-            if (!patientId || items.length === 0) return res.status(400).json({ success: false, message: 'patientId and items required' });
+            // accept both names
+            const consultationId = req.body.consultationId || req.body.consultation || null;
+            const patientId = req.body.patientId;
+            const items = req.body.items || req.body.medications || [];
+            const notes = req.body.notes || '';
+            const pharmacy = req.body.pharmacy || null;
+
+            if (!patientId || !Array.isArray(items) || items.length === 0) {
+                return res.status(400).json({ success: false, message: 'patientId and items required' });
+            }
+
+            // validUntil: use provided value or default to 30 days from now
+            const validUntil = req.body.validUntil ? new Date(req.body.validUntil) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
             const prescription = new Prescription({
-                consultation: consultationId || null,
+                consultation: consultationId,
                 patient: patientId,
-                prescriber: req.user.userId,
-                items,
+                prescriber: req.user.userId || req.user.id,
+                medications: items,
                 notes,
-                status: 'draft',
+                pharmacy,
+                status: req.body.status || 'draft',
+                validUntil,
             });
 
             await prescription.save();
-            // link to consultation
             if (consultationId) await Consultation.findByIdAndUpdate(consultationId, { $push: { prescriptions: prescription._id } });
 
             return res.status(201).json({ success: true, message: 'Prescription created', prescription });
         } catch (error) {
             console.error('createPrescription error:', error);
-            return res.status(500).json({ success: false, message: 'Server error' });
+            return res.status(500).json({ success: false, message: error.message });
         }
     },
 
@@ -99,7 +111,7 @@ const prescriptionController = {
             return res.status(200).json({ success: true, message: 'Prescription signed', prescription });
         } catch (error) {
             console.error('signPrescription error:', error);
-            return res.status(500).json({ success: false, message: 'Server error' });
+            return res.status(500).json({ success: false, message: error.message });
         }
     },
 
@@ -123,7 +135,6 @@ const prescriptionController = {
                 prescription.sentAt = new Date();
                 await prescription.save({ session });
 
-                // optional: create pharmacy notification record here
             });
 
             const updated = await Prescription.findById(id).populate('pharmacy patient prescriber');
@@ -131,7 +142,7 @@ const prescriptionController = {
         } catch (error) {
             if (error && error.status) return res.status(error.status).json({ success: false, message: error.message });
             console.error('assignPharmacy error:', error);
-            return res.status(500).json({ success: false, message: 'Server error' });
+            return res.status(500).json({ success: false, message: error.message });
         } finally {
             session.endSession();
         }

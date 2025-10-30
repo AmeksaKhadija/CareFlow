@@ -19,7 +19,7 @@ const authController = {
             return res.status(400).json({ success: false, message: msgs.join(', ') });
         }
 
-        const {name, email, password, role } = req.body;
+        const { name, email, password, role } = req.body;
 
         try {
             const existingUser = await User.findOne({ email });
@@ -52,7 +52,8 @@ const authController = {
             });
         } catch (err) {
             console.error(err);
-            return res.status(500).json({ success: false, message: 'Server error' });
+            const msg = process.env.NODE_ENV === 'production' ? 'Server error' : (err.message || String(err));
+            return res.status(500).json({ success: false, message: msg });
         }
     },
 

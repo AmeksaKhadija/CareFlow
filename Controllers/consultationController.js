@@ -9,6 +9,7 @@ const consultationController = {
         try {
             const { appointmentId, patientId, doctorId, vitals = [], diagnosis, procedures = [], notes } = req.body;
 
+
             if (!patientId || !doctorId) {
                 return res.status(400).json({ success: false, message: 'patientId and doctorId are required' });
             }
@@ -37,7 +38,7 @@ const consultationController = {
             return res.status(201).json({ success: true, consultation: populated });
 
         } catch (error) {
-            return res.status(500).json({ success: false, message: 'Server error' });
+            return res.status(500).json({ success: false, message: error.message });
         }
     },
 

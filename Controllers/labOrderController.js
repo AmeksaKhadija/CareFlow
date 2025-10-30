@@ -1,19 +1,28 @@
 import mongoose from 'mongoose';
 import LabOrder from '../Models/labOrderModel.js';
-import LabResult from '../Models/labResultModel.js';
-import storageService from '../services/storageService.js'; // implement upload/getPresignedUrl
+import LabResult from '../Models/labResultModel.js'; // <-- ajouté
+import storageService from '../services/storageService.js';
 import Consultation from '../Models/consultationModel.js';
 
 const labOrderController = {
   createLabOrder: async (req, res) => {
     try {
       const { consultationId, patientId, orderedBy, tests = [] } = req.body;
-      if (!patientId || tests.length === 0) return res.status(400).json({ success: false, message: 'patientId and tests required' });
+      const doctorId = req.body.doctor || orderedBy || req.user?.userId || req.user?.id;
+
+      if (!patientId || !Array.isArray(tests) || tests.length === 0) {
+        return res.status(400).json({ success: false, message: 'patientId and tests required' });
+      }
+
+      if (!doctorId) {
+        return res.status(400).json({ success: false, message: 'doctor (ordering user) is required' });
+      }
 
       const labOrder = new LabOrder({
         consultation: consultationId || null,
         patient: patientId,
-        orderedBy: orderedBy || req.user.userId,
+        doctor: doctorId,
+        orderedBy: orderedBy || req.user?.userId || req.user?.id,
         tests,
         status: 'ordered',
       });
@@ -24,7 +33,7 @@ const labOrderController = {
       return res.status(201).json({ success: true, labOrder });
     } catch (error) {
       console.error('createLabOrder error:', error);
-      return res.status(500).json({ success: false, message: 'Server error' });
+      return res.status(500).json({ success: false, message: error.message });
     }
   },
 
@@ -62,7 +71,7 @@ const labOrderController = {
     } catch (error) {
       if (error && error.status) return res.status(error.status).json({ success: false, message: error.message });
       console.error('uploadResult error:', error);
-      return res.status(500).json({ success: false, message: 'Server error' });
+      return res.status(500).json({ success: false, message: error });
     } finally {
       session.endSession();
     }

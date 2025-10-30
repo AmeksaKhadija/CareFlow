@@ -1,6 +1,10 @@
 import Joi from 'joi';
 
 export const registerSchema = Joi.object({
+    name: Joi.string()
+        .min(2)
+        .max(100)
+        .required(),
     email: Joi.string()
         .email({ tlds: { allow: ['com', 'net', 'org', 'ma'] } })
         .min(5)
@@ -19,7 +23,7 @@ export const registerSchema = Joi.object({
             'any.required': 'Password is required',
         }),
     role: Joi.string()
-        .valid('patient', 'medecin', 'infirmier', 'secretaire')
+        .valid('patient', 'medecin', 'infirmier', 'secretaire', 'admin', 'pharmacien', 'labo')
         .optional()
         .messages({
             'any.only': 'Role must be one of: patient, medecin, infirmier, secretaire',
